@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MahasiswaController;
+use App\Http\Controllers\MatakuliahController;
 
 Route::get('/data-mahasiswa', [MahasiswaController::class, 'index']) ->name('mahasiswa.index');
 
@@ -27,3 +28,6 @@ Route::get('matakuliah/{kode?}', function (?string $kode = null) {
 Route::get('/semester/{angka}', function (int $angka) {
     return 'Semester ke ' . $angka;
 })->whereNumber('angka');
+
+Route::get('/data-matakuliah', [MatakuliahController::class, 'index'])->name('matakuliah.index');
+Route::get('/data-matakuliah/{kode}', [MatakuliahController::class, 'show'])->name('matakuliah.show');
