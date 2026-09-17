@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MahasiswaController;
 use App\Http\Controllers\MatakuliahController;
+use App\Http\Controllers\MahasiswaWebController;
+
+Route::get('/mahasiswa-data', [MahasiswaWebController::class, 'index'])->name('mahasiswa.data');
 
 Route::get('/data-mahasiswa', [MahasiswaController::class, 'index']) ->name('mahasiswa.index');
 
