@@ -11,6 +11,8 @@ Route::get('/data-mahasiswa', [MahasiswaController::class, 'index']) ->name('mah
 
 Route::get('/data-mahasiswa/{nim}', [MahasiswaController::class, 'show'])->name('mahasiswa.show');
 
+Route::get('/mahasiswa-data/{mahasiswa}', [MahasiswaWebController::class, 'show'])->name('mahasiswa.detail');
+
 Route::get('/', function () {
     return 'Selamat datang di Praktikum Pemrograman Web II';
 });

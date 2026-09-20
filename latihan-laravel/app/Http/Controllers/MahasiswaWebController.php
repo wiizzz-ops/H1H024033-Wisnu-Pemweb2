@@ -53,9 +53,11 @@ class MahasiswaWebController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Mahasiswa $mahasiswa)
     {
-        //
+        $mahasiswa->load('programStudi', 'matakuliah');
+
+        return view('mahasiswa.detail', ['mahasiswa' => $mahasiswa]);
     }
 
     /**
@@ -80,5 +82,15 @@ class MahasiswaWebController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function topIpk()
+    {
+        $mahasiswa = Mahasiswa::whereHas('programStudi', fn ($q) => $q->where('kode', 'TK'))
+            ->orderByDesc('ipk')
+            ->take(10)
+            ->get();
+
+        return view('mahasiswa.top-ipk', ['daftarMahasiswa' => $mahasiswa]);
     }
 }
