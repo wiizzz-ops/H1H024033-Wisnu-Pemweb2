@@ -17,6 +17,10 @@ import (
 func main() {
     konf := config.Muat()
 
+    config.HubungkanBasisData(konf)
+    config.Migrasi()
+    config.DataAwal()
+
     app := fiber.New(fiber.Config{
         AppName:      konf.NamaAplikasi,
         ErrorHandler: penanganGalat,
@@ -27,7 +31,7 @@ func main() {
     app.Use(recoverer.New())
     app.Use(middleware.WaktuProses())
 
-    router.Daftarkan(app)
+    router.Daftarkan(app, konf.KunciApi)
 
     app.Use(func(c fiber.Ctx) error {
         return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
@@ -36,7 +40,6 @@ func main() {
         })
     })
 
-    log.Fatal(app.Listen(":" + konf.Port))
     log.Fatal(app.Listen(":" + konf.Port))
 }
 
