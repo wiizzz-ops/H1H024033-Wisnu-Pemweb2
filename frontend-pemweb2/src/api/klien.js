@@ -1,7 +1,8 @@
 import axios from 'axios'
+import backend from './backend'
 
 const klien = axios.create({
-  baseURL: import.meta.env.VITE_API_FIBER,
+  baseURL: backend.baseURL,
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',

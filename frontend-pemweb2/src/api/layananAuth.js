@@ -1,10 +1,12 @@
 import klien from './klien'
+import backend from './backend'
 
 export async function login(email, kataSandi) {
-  const respons = await klien.post('/auth/login', {
-    email: email,
-    password: kataSandi,
-  })
+  const isi = { email: email }
+
+  isi[backend.kolomSandi] = kataSandi
+
+  const respons = await klien.post('/auth/login', isi)
 
   return respons.data
 }

@@ -1,9 +1,16 @@
-import klien from './klien'
+import backend from './backend'
 
-export async function ambilDaftarMahasiswa(parameter) {
+export async function ambilDaftarMahasiswa({ halaman, cari, perHalaman }) {
+  const parameter = { cari: cari, per_halaman: perHalaman }
+
+  parameter[backend.parameterHalaman] = halaman
+
   const respons = await klien.get('/mahasiswa', { params: parameter })
 
-  return respons.data
+  return {
+    data: respons.data.data,
+    meta: backend.bacaMeta(respons.data.meta),
+  }
 }
 
 export async function ambilDetailMahasiswa(id) {
