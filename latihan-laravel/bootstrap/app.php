@@ -16,7 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias([
+            'peran.admin' => \App\Http\Middleware\PeranAdmin::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (NotFoundHttpException $e, Request $request) {
@@ -24,7 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 return response()->json([
                     'sukses' => false,
                     'pesan' => 'Sumber daya tidak ditemukan',
-                ], 401);
+                ], 404);
             }
         });
 
@@ -35,6 +37,15 @@ return Application::configure(basePath: dirname(__DIR__))
                     'pesan' => 'Data yang dikirim tidak valid',
                     'galat' => $e->errors(),
                 ], 422);
+            }
+        });
+
+        $exceptions->render(function (AuthenticationException $e, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'sukses' => false,
+                    'pesan' => 'Token tidak valid atau belum dikirim',
+                ], 401);
             }
         });
     })->create();
