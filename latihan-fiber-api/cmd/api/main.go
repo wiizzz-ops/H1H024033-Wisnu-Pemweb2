@@ -8,6 +8,7 @@ import (
     "github.com/gofiber/fiber/v3/middleware/logger"
     recoverer "github.com/gofiber/fiber/v3/middleware/recover"
     "github.com/gofiber/fiber/v3/middleware/requestid"
+    "github.com/gofiber/fiber/v3/middleware/cors"
 
     "latihan-fiber-api/internal/config"
     "latihan-fiber-api/internal/middleware"
@@ -30,6 +31,12 @@ func main() {
     app.Use(logger.New())
     app.Use(recoverer.New())
     app.Use(middleware.WaktuProses())
+
+    app.Use(cors.New(cors.Config{
+        AllowOrigins: []string{"http://localhost:5173"},
+        AllowMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+        AllowHeaders: []string{"Origin", "Content-Type", "Accept", "Authorization"},
+    }))
 
     router.Daftarkan(app)
 

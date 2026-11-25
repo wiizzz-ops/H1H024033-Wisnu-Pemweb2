@@ -3,11 +3,13 @@ package middleware
 import (
     "strconv"
     "strings"
+    "time"
 
     "github.com/gofiber/fiber/v3"
 
     "latihan-fiber-api/internal/auth"
     "latihan-fiber-api/internal/config"
+    "latihan-fiber-api/internal/model"
 )
 
 func Autentikasi() fiber.Handler {
@@ -30,6 +32,25 @@ func Autentikasi() fiber.Handler {
         if err != nil {
             return fiber.NewError(fiber.StatusUnauthorized, "Token tidak valid atau sudah kedaluwarsa")
         }
+
+        var jumlah int64
+
+        config.DB.Model(&model.TokenDicabut{}).
+            Where("hash_token = ?", auth.HashToken(bagian[1])).
+            Count(&jumlah)
+
+        if jumlah > 0 {
+            return fiber.NewError(fiber.StatusUnauthorized, "Token sudah dicabut")
+        }
+
+        kedaluwarsa := time.Now().Add(time.Hour)
+
+        if klaim.ExpiresAt != nil {
+            kedaluwarsa = klaim.ExpiresAt.Time
+        }
+
+        c.Locals("token", bagian[1])
+        c.Locals("kedaluwarsa", kedaluwarsa)
 
         id, err := strconv.ParseUint(klaim.Subject, 10, 64)
         if err != nil {

@@ -1,6 +1,8 @@
 package handler
 
 import (
+    "time"
+
     "github.com/gofiber/fiber/v3"
     "golang.org/x/crypto/bcrypt"
 
@@ -111,5 +113,51 @@ func Profil(c fiber.Ctx) error {
     return c.JSON(fiber.Map{
         "sukses": true,
         "data":   pengguna,
+    })
+}
+
+func Segarkan(c fiber.Ctx) error {
+    idPengguna := c.Locals("id_pengguna")
+
+    var pengguna model.Pengguna
+
+    err := config.DB.First(&pengguna, idPengguna).Error
+    if err != nil {
+        return fiber.NewError(fiber.StatusUnauthorized, "Pengguna tidak ditemukan")
+    }
+
+    konf := config.Muat()
+
+    token, err := auth.TerbitkanToken(pengguna.ID, pengguna.Peran, konf.JwtSecret, konf.JwtTtlMenit)
+    if err != nil {
+        return fiber.NewError(fiber.StatusInternalServerError, "Gagal menerbitkan token")
+    }
+
+    return c.JSON(fiber.Map{
+        "sukses": true,
+        "pesan":  "Token berhasil disegarkan",
+        "data": fiber.Map{
+            "token": token,
+            "tipe":  "Bearer",
+        },
+    })
+}
+
+func Logout(c fiber.Ctx) error {
+    token, _ := c.Locals("token").(string)
+    kedaluwarsa, _ := c.Locals("kedaluwarsa").(time.Time)
+
+    err := config.DB.Create(&model.TokenDicabut{
+        HashToken:   auth.HashToken(token),
+        Kedaluwarsa: kedaluwarsa,
+    }).Error
+
+    if err != nil {
+        return fiber.NewError(fiber.StatusInternalServerError, "Gagal mencabut token")
+    }
+
+    return c.JSON(fiber.Map{
+        "sukses": true,
+        "pesan":  "Logout berhasil",
     })
 }
